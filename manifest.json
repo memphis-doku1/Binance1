@@ -1,0 +1,15 @@
+{
+  "name": "Binance Hold",
+  "short_name": "Binance",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0b0e11",
+  "theme_color": "#181d25",
+  "icons": [
+    {
+      "src": "binance.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
