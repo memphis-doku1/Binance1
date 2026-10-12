@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance - Retrait & Hold Actif</title>
+    <!-- Lien vers le fichier manifest pour l'installation en app -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#181d25">
+    <link rel="apple-touch-icon" href="binance.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0b0e11;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 412px;
+            height: 850px;
+            background-color: #181d25;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+        }
+
+        .tab-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: none;
+            padding-bottom: 25px;
+        }
+
+        .tab-content.active-tab {
+            display: block;
+        }
+
+        .tab-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .tab-content::-webkit-scrollbar-thumb {
+            background: #2b313a;
+            border-radius: 4px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #181d25;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left i {
+            font-size: 20px;
+            color: #b7bdc6;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #2b313a;
+            border-radius: 20px;
+            padding: 3px;
+        }
+
+        .tab {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #848e9c;
+        }
+
+        .tab.active {
+            background-color: #181d25;
+            color: #ffffff;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-right i {
+            font-size: 18px;
+            color: #b7bdc6;
+        }
+
+        .search-bar {
+            margin: 0 20px 15px 20px;
+            background-color: #202630;
+            border-radius: 8px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #848e9c;
+            font-size: 14px;
+        }
+
+        .search-bar i {
+            color: #f0b90b;
+        }
+
+        .search-bar span {
+            color: #848e9c;
+            flex-grow: 1;
+        }
+
+        .balance-section {
+            padding: 0 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .balance-title {
+            font-size: 13px;
+            color: #848e9c;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .balance-pnl {
+            font-size: 12px;
+            color: #0ecb81;
+            margin-top: 5px;
+        }
+
+        .withdraw-btn {
+            background-color: #f0b90b;
+            color: #000;
+            font-weight: 600;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+        .withdraw-btn:hover {
+            opacity: 0.9;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quick-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .quick-icon {
+            width: 45px;
+            height: 45px;
+            background-color: #202630;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f0b90b;
+            font-size: 18px;
+        }
+
+        .quick-item span {
+            font-size: 11px;
+            color: #b7bdc6;
+        }
+
+        .banner-card {
+            margin: 0 20px 20px 20px;
+            background-color: #202630;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .rewards-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rewards-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rewards-left i {
+            font-size: 24px;
+            color: #f0b90b;
+        }
+
+        .rewards-text h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .rewards-text p {
+            font-size: 11px;
+            color: #848e9c;
+        }
+
+        .rewards-btn {
+            background-color: #2b313a;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 20px 12px 20px;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title a {
+            font-size: 12px;
+            color: #848e9c;
+            text-decoration: none;
+        }
+
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .crypto-card {
+            background-color: #202630;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .crypto-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .crypto-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #f0b90b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .crypto-icon.sol { background: #9945FF; color: #fff; }
+        .crypto-icon.btc { background: #F7931A; color: #fff; }
+        .crypto-icon.eth { background: #627EEA; color: #fff; }
+
+        .crypto-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .crypto-price {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .crypto-change {
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .crypto-change.up { color: #0ecb81; }
+
+        .mini-chart svg {
+            width: 100%;
+            height: 30px;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .market-list, .asset-list {
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .market-item, .asset-item {
+            background-color: #202630;
+            padding: 12px 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .market-info h5, .asset-info h5 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .market-info span, .asset-info span {
+            font-size: 11px;
+            color: #848e9c;
+        }
+
+        .market-price-box {
+            text-align: right;
+        }
+
+        .price-up { color: #0ecb81; font-weight: 600; font-size: 14px; }
+        .price-down { color: #f6465d; font-weight: 600; font-size: 14px; }
+
+        .trade-box {
+            margin: 0 20px;
+            background-color: #202630;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .trade-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .trade-input-group {
+            margin-bottom: 12px;
+        }
+
+        .trade-input-group label {
+            font-size: 12px;
+            color: #848e9c;
+        }
+
+        .trade-input {
+            background: #181d25;
+            border: 1px solid #2b313a;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-green {
+            background-color: #0ecb81;
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-red {
+            background-color: #f6465d;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 100;
+        }
+
+        .modal-container {
+            width: 100%;
+            background-color: #1e2329;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+        }
+
+        .modal-header i {
+            cursor: pointer;
+            color: #848e9c;
+            font-size: 18px;
+        }
+
+        .withdraw-option-card {
+            background-color: #2b313a;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-left: 4px solid #f6465d;
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .option-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .option-title {
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lock-badge {
+            background-color: rgba(246, 70, 93, 0.2);
+            color: #f6465d;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .hold-reason {
+            font-size: 12px;
+            color: #f6465d;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .countdown-timer {
+            font-size: 12px;
+            color: #f0b90b;
+            font-family: monospace;
+            background: #181d25;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .bottom-nav {
+            background-color: #181d25;
+            border-top: 1px solid #2b313a;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 20;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #848e9c;
+            text-decoration: none;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-item.active {
+            color: #f0b90b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+
+        <div id="tab-accueil" class="tab-content active-tab">
+            <div class="header">
+                <div class="header-left">
+                    <i class="fa-solid fa-bars"></i>
+                    <div class="tabs">
+                        <div class="tab active">Exchange</div>
+                        <div class="tab">Portefeuille</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <i class="fa-solid fa-headphones"></i>
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <i class="fa-solid fa-fire"></i>
+                <span>Tendance: PEPE, BTC, SOL, SUI</span>
+                <i class="fa-solid fa-compress" style="color: #848e9c;"></i>
+            </div>
+
+            <div class="balance-section">
+                <div>
+                    <div class="balance-title">Valeur totale est. <i class="fa-solid fa-eye" style="font-size: 11px;"></i></div>
+                    <div class="balance-amount">60,68 <span style="font-size: 16px; font-weight: normal;">USDT</span></div>
+                    <div class="balance-pnl">G et P aujourd'hui +2,45 USD (+4.21%)</div>
+                </div>
+                <button class="withdraw-btn" onclick="openWithdrawModal()">Retirer</button>
+            </div>
+
+            <div class="quick-actions">
+                <div class="quick-item">
+                    <div class="quick-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <span>Dépôt</span>
+                </div>
+                <div class="quick-item">
+                    <div class="quick-icon"><i class="fa-solid fa-coins"></i></div>
+                    <span>Earn</span>
+                </div>
+                <div class="quick-item">
+                    <div class="quick-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <span>Convertir</span>
+                </div>
+                <div class="quick-item">
+                    <div class="quick-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <span>Stratégie</span>
+                </div>
+            </div>
+
+            <div class="banner-card">
+                <div class="rewards-content">
+                    <div class="rewards-left">
+                        <i class="fa-solid fa-gift"></i>
+                        <div class="rewards-text">
+                            <h4>Centre de Récompenses</h4>
+                            <p>Récupérez vos 100 USDT de bonus</p>
+                        </div>
+                    </div>
+                    <button class="rewards-btn">Voir</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Cryptos Populaires</span>
+                <a href="#" onclick="switchTab('marches', document.querySelectorAll('.nav-item')[1])">Tout voir &gt;</a>
+            </div>
+
+            <div class="crypto-grid">
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon btc">B</div>
+                        <span class="crypto-name">BTC</span>
+                    </div>
+                    <div class="crypto-price">67,450.00</div>
+                    <div class="crypto-change up">▲ 3.45%</div>
+                    <div class="mini-chart">
+                        <svg viewBox="0 0 100 30"><path d="M0,20 Q30,5 60,15 T100,2" stroke="#0ecb81"></path></svg>
+                    </div>
+                </div>
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon eth">E</div>
+                        <span class="crypto-name">ETH</span>
+                    </div>
+                    <div class="crypto-price">3,520.10</div>
+                    <div class="crypto-change up">▲ 1.80%</div>
+                    <div class="mini-chart">
+                        <svg viewBox="0 0 100 30"><path d="M0,25 Q25,10 50,18 T100,8" stroke="#0ecb81"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-marches" class="tab-content">
+            <div class="header">
+                <div class="header-left" style="font-size: 16px; font-weight: bold;">Marchés & Paires</div>
+                <div class="header-right"><i class="fa-solid fa-search"></i></div>
+            </div>
+            <div class="section-title">Favoris & Hot</div>
+            <div class="market-list">
+                <div class="market-item">
+                    <div class="market-info">
+                        <h5>BTC / USDT</h5>
+                        <span>Vol: 42.5B USDT</span>
+                    </div>
+                    <div class="market-price-box">
+                        <div class="price-up">67,450.00</div>
+                        <span style="font-size: 11px; color: #0ecb81;">+3.45%</span>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-info">
+                        <h5>ETH / USDT</h5>
+                        <span>Vol: 21.1B USDT</span>
+                    </div>
+                    <div class="market-price-box">
+                        <div class="price-up">3,520.10</div>
+                        <span style="font-size: 11px; color: #0ecb81;">+1.80%</span>
+                    </div>
+                </div>
+                <div class="market-item">
+                    <div class="market-info">
+                        <h5>BNB / USDT</h5>
+                        <span>Vol: 1.2B USDT</span>
+                    </div>
+                    <div class="market-price-box">
+                        <div class="price-down">747.50</div>
+                        <span style="font-size: 11px; color: #f6465d;">-0.80%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-trader" class="tab-content">
+            <div class="header">
+                <div class="header-left" style="font-size: 16px; font-weight: bold;">Spot Trading (BTC/USDT)</div>
+            </div>
+            <div class="trade-box">
+                <div style="font-size: 13px; color: #848e9c; margin-bottom: 12px;">Prix marché: <b style="color: #0ecb81;">67,450.00 USDT</b></div>
+                <div class="trade-input-group">
+                    <label>Prix d'achat (USDT)</label>
+                    <input type="text" class="trade-input" value="67,450.00">
+                </div>
+                <div class="trade-input-group">
+                    <label>Montant (USDT) - Solde: 60.68</label>
+                    <input type="text" class="trade-input" value="60.68">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-green">Acheter BTC</button>
+                    <button class="btn-red">Vendre BTC</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-futures" class="tab-content">
+            <div class="header">
+                <div class="header-left" style="font-size: 16px; font-weight: bold;">Futures Perpétuels</div>
+            </div>
+            <div class="banner-card" style="background-color: #2b313a; margin-top: 5px;">
+                <h4 style="margin-bottom: 4px; color: #f0b90b;">Effet de levier : x50</h4>
+                <p style="font-size: 12px; color: #848e9c;">Mode Marge Croisée activé.</p>
+            </div>
+            <div class="trade-box">
+                <div class="trade-row">
+                    <span style="color: #848e9c;">Marge disponible:</span>
+                    <span style="font-weight: 600;">60.68 USDT</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-green">Long (Achat)</button>
+                    <button class="btn-red">Short (Vente)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-actifs" class="tab-content">
+            <div class="header">
+                <div class="header-left" style="font-size: 16px; font-weight: bold;">Portefeuille Actifs</div>
+            </div>
+            <div class="balance-section" style="padding: 0 20px; margin-bottom: 20px;">
+                <div>
+                    <div class="balance-title">Solde total disponible</div>
+                    <div class="balance-amount">60,68 USDT</div>
+                    <div class="balance-pnl" style="color: #0ecb81;">≈ 620.00 MAD</div>
+                </div>
+            </div>
+            <div class="section-title">Répartition des avoirs</div>
+            <div class="asset-list">
+                <div class="asset-item">
+                    <div class="asset-info">
+                        <h5>USDT</h5>
+                        <span>Tether (Spot)</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600;">60.68</div>
+                        <span style="color: #0ecb81;">60.68 USDT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="withdrawModal" class="modal-overlay" onclick="closeWithdrawModal(event)">
+            <div class="modal-container" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>Sélectionner le mode de retrait</h3>
+                    <i class="fa-solid fa-xmark" onclick="closeWithdrawModalForce()"></i>
+                </div>
+
+                <div class="withdraw-option-card">
+                    <div class="option-top">
+                        <div class="option-title"><i class="fa-solid fa-credit-card" style="color: #f6465d;"></i> Carte bancaire</div>
+                        <span class="lock-badge"><i class="fa-solid fa-lock"></i> Bloqué</span>
+                    </div>
+                    <div class="hold-reason">Motif : Hold le montant</div>
+                    <div class="countdown-timer" id="timer-card">Calcul...</div>
+                </div>
+
+                <div class="withdraw-option-card">
+                    <div class="option-top">
+                        <div class="option-title"><i class="fa-solid fa-building-columns" style="color: #f6465d;"></i> Compte bancaire</div>
+                        <span class="lock-badge"><i class="fa-solid fa-lock"></i> Bloqué</span>
+                    </div>
+                    <div class="hold-reason">Motif : Hold le montant</div>
+                    <div class="countdown-timer" id="timer-bank">Calcul...</div>
+                </div>
+
+                <div class="withdraw-option-card" style="margin-bottom: 0;">
+                    <div class="option-top">
+                        <div class="option-title"><i class="fa-solid fa-user-group" style="color: #f6465d;"></i> P2P Express</div>
+                        <span class="lock-badge"><i class="fa-solid fa-lock"></i> Bloqué</span>
+                    </div>
+                    <div class="hold-reason">Motif : Hold le montant</div>
+                    <div class="countdown-timer" id="timer-p2p">Calcul...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('accueil', this)">
+                <i class="fa-solid fa-house"></i>
+                <span>Accueil</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('marches', this)">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Marchés</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('trader', this)">
+                <i class="fa-solid fa-right-left"></i>
+                <span>Trader</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('futures', this)">
+                <i class="fa-solid fa-file-lines"></i>
+                <span>Futures</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('actifs', this)">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Actifs</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tabId, element) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active-tab'));
+
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach(i => i.classList.remove('active'));
+
+            document.getElementById('tab-' + tabId).classList.add('active-tab');
+            if (element) {
+                element.classList.add('active');
+            }
+        }
+
+        function openWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function closeWithdrawModalForce() {
+            document.getElementById('withdrawModal').style.display = 'none';
+        }
+
+        function closeWithdrawModal(event) {
+            if (event.target.id === 'withdrawModal') {
+                document.getElementById('withdrawModal').style.display = 'none';
+            }
+        }
+
+        const targetDate = new Date('2026-10-18T23:59:00').getTime();
+
+        function updateCountdowns() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.querySelectorAll('.countdown-timer').forEach(el => {
+                    el.innerHTML = "Débloqué";
+                });
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const timeString = `${days}j ${hours}h ${minutes}m ${seconds}s`;
+
+            document.getElementById('timer-card').innerHTML = timeString;
+            document.getElementById('timer-bank').innerHTML = timeString;
+            document.getElementById('timer-p2p').innerHTML = timeString;
+        }
+
+        setInterval(updateCountdowns, 1000);
+        updateCountdowns();
+
+        // Enregistrement du Service Worker pour installation mobile
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
